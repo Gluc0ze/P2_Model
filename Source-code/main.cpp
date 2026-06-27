@@ -14,9 +14,8 @@ int main(int argc, const char * argv[])
 {
     // arguments
     bool HPC = false;
-    int bf = 18;        // create toy example to debug
-    int ef = 18;
-    int set = 4;
+    int si = 18;        // start index
+    int ei = 18;        // end index (max 240)
     double timelimit = 300;
     
     //std::vector<std::pair<int, int>> file_indexes = input_selection(false);
@@ -24,7 +23,7 @@ int main(int argc, const char * argv[])
     // error handling
     if (argc < 6)
     {
-        std::cerr << "Usage: ./Model_P2 -s <set> -bf <begin file> -ef <end file> -t <runtime>\n";
+        std::cerr << "Usage: ./Model_P2 -si <start index> -ei <end index> -t <runtime>\n";
         //return 1;
     }
     else{HPC = true;}
@@ -32,9 +31,8 @@ int main(int argc, const char * argv[])
     for (int i = 1; i < argc; i++)
     {
         std::string flag = argv[i];
-        if (flag == "-s" && i + 1 < argc){set = std::stoi(argv[i + 1]);i++;}
-        else if (flag == "-bf" && i + 1 < argc){bf = std::stoi(argv[i + 1]);i++;}
-        else if (flag == "-ef" && i + 1 < argc){ef = std::stoi(argv[i + 1]);i++;}
+        if (flag == "-si" && i + 1 < argc){si = std::stoi(argv[i + 1]);i++;}
+        else if (flag == "-ei" && i + 1 < argc){ei = std::stoi(argv[i + 1]);i++;}
         else if (flag == "-t" && i + 1 < argc){timelimit = std::stod(argv[i + 1]);i++;}
     }
 
