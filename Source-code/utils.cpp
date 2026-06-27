@@ -16,58 +16,49 @@ int sum_vector(const std::vector<int> &vec)
     return sum;
 }
 
-std::vector<int> determine_ES(const MSProjectData &data){
-    
+std::vector<int> determine_ES(const MSProjectData &data)
+{
     const int n = data.num_activities;
-    std::vector<int> ES(n,-1);
-    
-    // initially, start node is fixed
-    ES[0] = 0;
-    bool changed = true;
-    while (changed)
-    {
-        changed = false;
-        
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                // i precedes j
-                if (data.matrix_dir_predecessors[i][j] == 1)
-                {
-                    int new_es = ES[i] + data.durations[i];
-                    if (new_es > ES[j]){ES[j] = new_es; changed = true;}
-                }
-            }
+    std::vector<int> ES(n, 0);
+
+    for(int i = 0; i<n; i++){
+        int max_time = 0;
+        for(int i2 = 0; i2< data.num_dir_predecessors[i]; i2++){
+            int pred = data.index_dir_predecessors[i][i2];
+            if(ES[pred]+data.durations[pred]>max_time){max_time = ES[pred]+data.durations[pred];}
         }
+        ES[i] = max_time;
     }
-    
+
     return ES;
 }
 
-std::vector<int> determine_LS(const MSProjectData &data, int T)
+std::vector<int> determine_LS(const MSProjectData &data, int makespan)
 {
     const int n = data.num_activities;
-    std::vector<int> LS(n, T);
+    std::vector<int> LS(n, makespan);
 
-    // terminal node (usually last activity)
-    LS[n - 1] = T - data.durations[n - 1];
-
-    bool changed = true;
-    while (changed)
+    // reverse topological order assumption
+    for (int i = n - 1; i >= 0; i--)
     {
-        changed = false;
-        for (int i = 0; i < n; i++)
+        bool hasSuccessor = false;
+        int min_time = makespan;
+        for (int k = 0; k < data.num_dir_successors[i]; k++)
         {
-            for (int j = 0; j < n; j++)
-            {
-                // i precedes j
-                if (data.matrix_dir_predecessors[i][j] == 1)
-                {
-                    int new_ls = LS[j] - data.durations[i];
-                    if (LS[i] == T || new_ls < LS[i]) {LS[i] = new_ls; changed = true;}
-                }
-            }
+            hasSuccessor = true;
+            int succ = data.index_dir_successors[i][k];
+            int candidate = LS[succ] - data.durations[i];
+            if (candidate < min_time){min_time = candidate;}
+        }
+
+        // if no successors → end activity
+        if (!hasSuccessor)
+        {
+            LS[i] = makespan - data.durations[i];
+        }
+        else
+        {
+            LS[i] = min_time;
         }
     }
 

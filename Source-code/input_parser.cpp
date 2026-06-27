@@ -22,7 +22,9 @@
 std::vector<std::pair<int, int>> input_selection(bool HPC)
 {
     std::ifstream infile;
-    if(HPC == true){infile.open("/user/gent/479/vsc47914/Selection_activities/MSLIB_P3_V1.txt");}
+    if(HPC == true){
+        infile.open("/user/gent/479/vsc47914/P2/Model_P2/instance_select/P2_testset1.txt");
+    }
     else
     {
         //infile.open ("/Users/guillaumevermeire/Library/CloudStorage/OneDrive-UGent/MacOS/Onderzoek/Paper_3/Code/Select_instances_V2/TestSet_V5.txt");
@@ -607,3 +609,48 @@ void completeTrainingData(MSProjectData &data)
     data.tc = 1;
 }
 
+void solution_output_model(const Solution &sol, bool HPC)
+{
+    std::string path = "";
+    if(HPC == true)
+    {
+        path = "/user/gent/479/vsc47914/P2/Model_P2/results/instances";
+        path.append("/MSLIB");
+    }
+    else
+    {
+        path = "/Users/guillaumevermeire/Library/CloudStorage/OneDrive-UGent/MacOS/Onderzoek/Paper_2/After Reject 2/Resulties/";
+    }
+    path.append("Set"+std::to_string(sol.set)+"_"+std::to_string(sol.file)+".txt");
+    
+    std::ofstream out(path);
+    if (!out.is_open())
+    {
+        std::cerr << "Cannot open file: " << path << std::endl;
+        return;
+    }
+
+    // check status
+    bool status_symbol = false;
+    if(sol.status != "NOSOL" && sol.status != "INF"){status_symbol = true;}
+    
+    // =====================
+    // META
+    // =====================
+    out << "/* Instance information */" << "\n";
+    out << "set;" << sol.set << "\n";
+    out << "file;" << sol.file << "\n";
+    
+    // =====================
+    // SOLVER INFO
+    // =====================
+    out << "\n" << "/* Solver information */" << "\n";
+    out << "status;" << sol.status << "\n";
+    out << "LB;"; if(status_symbol){out << sol.LB;} else{out << "-";}  out << "\n";
+    out << "UB;";  if(status_symbol){out << sol.UB;} else{out << "-";}  out << "\n";
+    out << "GAP;"; if(status_symbol){out << sol.GAP;} else{out << "-";} out << "\n";
+    out << "CPU;"; if(status_symbol){out << sol.CPU;} else{out << "-";} out << "\n";
+    out << "TR;"; if(status_symbol){out << sol.percentage_trained;} else{out << "-";} out << "\n";
+    
+    out.close();
+}

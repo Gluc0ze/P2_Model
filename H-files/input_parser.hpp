@@ -18,6 +18,7 @@ void printParsedData(const MSProjectData& data);
 std::vector<std::pair<int, int>> input_selection(bool HPC);
 std::vector<std::pair<int, int>> input_selection_set(const int set, bool HPC);
 void completeTrainingData(MSProjectData &data);
+void solution_output_model(const Solution &sol, bool HPC);
 
 #endif /* input_parser_hpp */
 

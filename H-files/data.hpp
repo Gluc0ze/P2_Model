@@ -76,6 +76,7 @@ struct Training
 
 struct Solution
 {
+    
     std::vector<int> starttimes;
     std::vector<int> finishtimes;
     std::vector<std::vector<std::vector<std::vector<int>>>> assignmnets;
@@ -90,10 +91,15 @@ struct Solution
     int makespan = 9999;
     std::vector<Training> training;
     
+    // HPC output
+    int set;
+    int file;
     double UB = 0;
     double LB = 0;
     double CPU = 0;
     double GAP = 0;
+    double percentage_trained = 0;
+    std::string status = "";
     
     // determine resource per activity assigned
     void determine_rpa(const int n, const int s, const int r, const int l)

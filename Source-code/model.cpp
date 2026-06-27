@@ -205,17 +205,21 @@ Solution Model_CAT_Vermeire_P2(const MSProjectData &data)
     return sol;
 }
 
-Solution Model_CAT_TRAIN_Vermeire_P2(const MSProjectData &data)
+Solution Model_CAT_TRAIN_Vermeire_P2(const MSProjectData &data, double timelimit)
 {
     Solution sol;
     n = data.num_activities;
     r = data.num_resources;
     s = data.num_skills;
     
-    T = sum_vector(data.durations);
-    
-    std::vector<int> ES(n,0);   // temp
-    std::vector<int> LS(n,T);
+    //T = sum_vector(data.durations);
+    T = 0;
+    for(int i = 0; i<n; i++){
+        if(data.durations[i]>T){T = data.durations[i];}
+    }
+    T += data.due_date1;
+    std::vector<int> ES = determine_ES(data);   // temp
+    std::vector<int> LS = determine_LS(data, T);
     
     try
     {
@@ -225,6 +229,7 @@ Solution Model_CAT_TRAIN_Vermeire_P2(const MSProjectData &data)
         // create model
         GRBModel model = GRBModel(env);
         env.set(GRB_IntParam_OutputFlag, 0);
+        model.set(GRB_IntParam_Threads, 1);
         
         // assignment variables
         //GRBVar x[n][s][r][T+1];
@@ -440,8 +445,13 @@ Solution Model_CAT_TRAIN_Vermeire_P2(const MSProjectData &data)
             obj += st[n-1][t]*t;
         }
         model.setObjective(obj, GRB_MINIMIZE);
-        model.set(GRB_DoubleParam_TimeLimit, 300);
+        model.set(GRB_DoubleParam_TimeLimit, timelimit);
         model.optimize();
+        
+        int status = model.get(GRB_IntAttr_Status);
+        if (status == GRB_OPTIMAL) {sol.status = "OPT";}
+        else if (status == GRB_INFEASIBLE){sol.status = "INF";}
+        else if (status == GRB_TIME_LIMIT){sol.status = "FEAS";}
         
         if (model.get(GRB_IntAttr_SolCount) > 0)
         {
@@ -453,157 +463,31 @@ Solution Model_CAT_TRAIN_Vermeire_P2(const MSProjectData &data)
             sol.CPU = model.get(GRB_DoubleAttr_Runtime);        // Runtime in seconds
             sol.GAP = model.get(GRB_DoubleAttr_MIPGap);         // Relative MIP gap
             
-            // print information
-            std::cout << "\n=====================================\n";
-            std::cout << "OBJECTIVE = "
-            << model.get(GRB_DoubleAttr_ObjVal)
-            << "\n=====================================\n";
-            
-            //--------------------------------------------------
-            // Start times
-            //--------------------------------------------------
-            std::cout << "\nACTIVITY START TIMES\n";
-            
-            for(int i = 0; i < n; i++)
-            {
-                for(int t = 0; t < T; t++)
-                {
-                    if(st[i][t].get(GRB_DoubleAttr_X) > 0.5)
-                    {
-                        std::cout
-                        << "Activity " << i
-                        << " starts at t = " << t
-                        << std::endl;
-                    }
-                }
-            }
-            
-            //--------------------------------------------------
-            // Assignments
-            //--------------------------------------------------
-            std::cout << "\nRESOURCE ASSIGNMENTS\n";
-            
-            for(int i = 0; i < n; i++)
-            {
-                for(int j = 0; j < s; j++)
-                {
-                    for(int k = 0; k < r; k++)
-                    {
-                        for(int t = 0; t < T; t++)
-                        {
-                            if(x[i][j][k][t].get(GRB_DoubleAttr_X) > 0.5)
-                            {
-                                std::cout
-                                << "Activity=" << i
-                                << " Skill=" << j
-                                << " Resource=" << k
-                                << " Time=" << t
-                                << std::endl;
-                            }
-                        }
-                    }
-                }
-            }
-            
             //--------------------------------------------------
             // Trainings
             //--------------------------------------------------
-            std::cout << "\nTRAINING STARTS\n";
-            
+            double total_trained = 0;
             for(int k = 0; k < r; k++)
             {
                 for(int j = 0; j < s; j++)
                 {
                     for(int t = 0; t < T; t++)
                     {
-                        if(tr[k][j][t].get(GRB_DoubleAttr_X) > 0.5)
-                        {
-                            std::cout
-                            << "Resource=" << k
-                            << " Skill=" << j
-                            << " TrainingStart=" << t
-                            << std::endl;
-                        }
+                        if(tr[k][j][t].get(GRB_DoubleAttr_X) > 0.5){total_trained++;}
                     }
                 }
             }
+            // percentage trained
+            sol.percentage_trained = (total_trained/(double)data.tb)*100;
+            printf("");
             
-            //--------------------------------------------------
-            // Skill evolution
-            //--------------------------------------------------
-            std::cout << "\nSKILL MATRIX OVER TIME\n";
-            
-            for(int k = 0; k < r; k++)
-            {
-                for(int j = 0; j < s; j++)
-                {
-                    std::cout
-                    << "Resource " << k
-                    << " Skill " << j
-                    << " : ";
-                    
-                    for(int t = 0; t < T; t++)
-                    {
-                        std::cout
-                        << (int)std::round(
-                                           b[k][j][t].get(GRB_DoubleAttr_X)
-                                           );
-                    }
-                    
-                    std::cout << std::endl;
-                }
-            }
-            
-            //--------------------------------------------------
-            // Resource timelines (MOST USEFUL)
-            //--------------------------------------------------
-            std::cout << "\nRESOURCE TIMELINES\n";
-            
-            for(int k = 0; k < r; k++)
-            {
-                std::cout << "\nResource " << k << "\n";
-                
-                for(int t = 0; t < T; t++)
-                {
-                    std::cout << "t=" << std::setw(3) << t << " : ";
-                    
-                    bool something = false;
-                    
-                    // training
-                    for(int j = 0; j < s; j++)
-                    {
-                        if(tr[k][j][t].get(GRB_DoubleAttr_X) > 0.5)
-                        {
-                            std::cout << "TRAIN(skill=" << j << ") ";
-                            something = true;
-                        }
-                    }
-                    
-                    // assignments
-                    for(int i = 0; i < n; i++)
-                    {
-                        for(int j = 0; j < s; j++)
-                        {
-                            if(x[i][j][k][t].get(GRB_DoubleAttr_X) > 0.5)
-                            {
-                                std::cout
-                                << "ACT("
-                                << i
-                                << ",skill="
-                                << j
-                                << ") ";
-                                
-                                something = true;
-                            }
-                        }
-                    }
-                    
-                    if(!something)
-                        std::cout << "-";
-                    
-                    std::cout << std::endl;
-                }
-            }
+        }
+        else if (model.get(GRB_IntAttr_SolCount) == 0){
+            sol.status = "NOSOL";
+            sol.UB = 9999;
+            sol.LB = 9999;
+            sol.GAP = 9999;
+            sol.percentage_trained = 9999;
         }
     }
     

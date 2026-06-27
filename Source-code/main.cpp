@@ -17,13 +17,14 @@ int main(int argc, const char * argv[])
     int bf = 18;        // create toy example to debug
     int ef = 18;
     int set = 4;
+    double timelimit = 300;
     
     //std::vector<std::pair<int, int>> file_indexes = input_selection(false);
     
     // error handling
     if (argc < 6)
     {
-        std::cerr << "Usage: ./Heuristic_P2 -s <set> -bf <begin file> -ef <end file> \n";
+        std::cerr << "Usage: ./Model_P2 -s <set> -bf <begin file> -ef <end file> -t <runtime>\n";
         //return 1;
     }
     else{HPC = true;}
@@ -34,13 +35,14 @@ int main(int argc, const char * argv[])
         if (flag == "-s" && i + 1 < argc){set = std::stoi(argv[i + 1]);i++;}
         else if (flag == "-bf" && i + 1 < argc){bf = std::stoi(argv[i + 1]);i++;}
         else if (flag == "-ef" && i + 1 < argc){ef = std::stoi(argv[i + 1]);i++;}
+        else if (flag == "-t" && i + 1 < argc){timelimit = std::stod(argv[i + 1]);i++;}
     }
 
     // input selection
     std::vector<std::pair<int, int>> selection = input_selection(false);
     
     //for(int f = bf; f<=ef; f++)
-    for(int f = 0; f<1/*selection.size()*/; f++)
+    for(int f = 1; f<2/*selection.size()*/; f++)
     {
         int file = selection[f].second;
         int set = selection[f].first;
@@ -53,7 +55,9 @@ int main(int argc, const char * argv[])
         project.training_duration = trd;
         project.training_costs = {1,1,1,1};
     
-        Solution result = Model_CAT_TRAIN_Vermeire_P2(project);
+        Solution result = Model_CAT_TRAIN_Vermeire_P2(project,timelimit);
+        result.set = set;
+        result.file = file;
         //printf("Final Result;%d;%d;%d\n",set,f, result.makespan);
         printf("Gurobi Result; (%d); %d; %d; %.2f;%.2f; %.2f;%.2f\n",
                f,
@@ -63,6 +67,9 @@ int main(int argc, const char * argv[])
                result.UB,
                result.GAP,
                result.CPU);
+        
+        solution_output_model(result, HPC);
+
     }
     
 }
