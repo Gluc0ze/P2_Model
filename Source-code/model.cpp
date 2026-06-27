@@ -12,6 +12,7 @@
 #include "utils.hpp"
 #include "gurobi_c++.h"
 #include <iomanip>
+#include <cmath>
 
 int n = -1;
 int r = -1;
