@@ -21,7 +21,7 @@ int main(int argc, const char * argv[])
     //std::vector<std::pair<int, int>> file_indexes = input_selection(false);
     
     // error handling
-    if (argc < 6)
+    if (argc < 4)
     {
         std::cerr << "Usage: ./Model_P2 -si <start index> -ei <end index> -t <runtime>\n";
         //return 1;
@@ -40,7 +40,7 @@ int main(int argc, const char * argv[])
     std::vector<std::pair<int, int>> selection = input_selection(false);
     
     //for(int f = bf; f<=ef; f++)
-    for(int f = 1; f<2/*selection.size()*/; f++)
+    for(int f = si; f<ei; f++)
     {
         int file = selection[f].second;
         int set = selection[f].first;
