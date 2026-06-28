@@ -39,7 +39,7 @@ std::vector<std::pair<int, int>> input_selection(bool HPC)
 
         if (!infile || !infile.is_open())
         {
-            std::cerr << "Failed to open the file." << std::endl;
+            std::cerr << "Failed to open the input selection." << std::endl;
             return out;
         }
 

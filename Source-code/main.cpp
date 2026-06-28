@@ -37,7 +37,7 @@ int main(int argc, const char * argv[])
     }
 
     // input selection
-    std::vector<std::pair<int, int>> selection = input_selection(false);
+    std::vector<std::pair<int, int>> selection = input_selection(HPC);
     
     //for(int f = bf; f<=ef; f++)
     for(int f = si; f<ei; f++)
