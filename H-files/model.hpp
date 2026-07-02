@@ -16,5 +16,5 @@
 
 Solution Model_CAT_Vermeire_P2(const MSProjectData &data);
 Solution Model_CAT_TRAIN_Vermeire_P2(const MSProjectData &data, double timelimit);
-
+Solution ContiniousModel_CAT_TRAIN_Vermeire(const MSProjectData &data,double timelimit);
 #endif /* model_hpp */

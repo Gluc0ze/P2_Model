@@ -14,8 +14,8 @@ int main(int argc, const char * argv[])
 {
     // arguments
     bool HPC = false;
-    int si = 18;        // start index
-    int ei = 18;        // end index (max 240)
+    int si = 0;        // start index
+    int ei = 10;        // end index (max 240)
     double timelimit = 300;
     
     //std::vector<std::pair<int, int>> file_indexes = input_selection(false);
@@ -45,6 +45,7 @@ int main(int argc, const char * argv[])
         int file = selection[f].second;
         int set = selection[f].first;
         MSProjectData project = parse_msrcp_file(set, file, HPC);
+        //MSProjectData project = parse_msrcp_file(3, 296, HPC);
         completeProjectData(project);
         
         // currently on 10% of max budget and mean of duration
@@ -53,7 +54,8 @@ int main(int argc, const char * argv[])
         project.training_duration = trd;
         project.training_costs = {1,1,1,1};
     
-        Solution result = Model_CAT_TRAIN_Vermeire_P2(project,timelimit);
+        //Solution result = Model_CAT_TRAIN_Vermeire_P2(project,timelimit);
+        Solution result = ContiniousModel_CAT_TRAIN_Vermeire(project,timelimit);
         result.set = set;
         result.file = file;
         //printf("Final Result;%d;%d;%d\n",set,f, result.makespan);
