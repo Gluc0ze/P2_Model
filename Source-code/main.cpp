@@ -16,7 +16,7 @@ int main(int argc, const char * argv[])
     bool HPC = false;
     int si = 0;        // start index
     int ei = 10;        // end index (max 240)
-    double timelimit = 300;
+    double timelimit = 30;
     
     //std::vector<std::pair<int, int>> file_indexes = input_selection(false);
     
