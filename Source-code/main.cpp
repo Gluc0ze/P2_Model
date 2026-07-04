@@ -40,7 +40,7 @@ int main(int argc, const char * argv[])
     std::vector<std::pair<int, int>> selection = input_selection(HPC);
     
     //for(int f = bf; f<=ef; f++)
-    for(int f = si; f<ei; f++)
+    for(int f = si; f<=ei; f++)
     {
         int file = selection[f].second;
         int set = selection[f].first;
