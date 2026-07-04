@@ -23,7 +23,7 @@ std::vector<std::pair<int, int>> input_selection(bool HPC)
 {
     std::ifstream infile;
     if(HPC == true){
-        infile.open("/user/gent/479/vsc47914/P2/Model_P2/instance_select/P2_HardsetCopy.txt");
+        infile.open("/user/gent/479/vsc47914/P2/Model_P2/instance_select/P2_Hardset.txt");
     }
     else
     {
