@@ -20,6 +20,5 @@ std::vector<std::pair<int, int>> input_selection_set(const int set, bool HPC);
 void completeTrainingData(MSProjectData &data,
                           double &percentage);
 void solution_output_model(const Solution &sol, bool HPC,double &percentage);
-
 #endif /* input_parser_hpp */
 
