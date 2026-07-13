@@ -594,7 +594,8 @@ void completeTrainingData(MSProjectData &data,
         }
     }
     data.mt = max;
-    int budget = static_cast<int>(std::ceil(0.10*max));
+    //int budget = static_cast<int>(std::ceil(0.10*max));
+    int budget = static_cast<int>(std::ceil(percentage*max));
     data.tb = budget;
     
     // one single training duration is equal to the mean (sorted middle) of all activity durations
