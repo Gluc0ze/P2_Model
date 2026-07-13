@@ -17,6 +17,7 @@ int main(int argc, const char * argv[])
     int si = 0;        // start index
     int ei = 10;        // end index (max 240)
     double timelimit = 30;
+    double budget_percentage = 0.10;
     
     //std::vector<std::pair<int, int>> file_indexes = input_selection(false);
     
@@ -34,6 +35,7 @@ int main(int argc, const char * argv[])
         if (flag == "-si" && i + 1 < argc){si = std::stoi(argv[i + 1]);i++;}
         else if (flag == "-ei" && i + 1 < argc){ei = std::stoi(argv[i + 1]);i++;}
         else if (flag == "-t" && i + 1 < argc){timelimit = std::stod(argv[i + 1]);i++;}
+        else if (flag == "-b" && i + 1 < argc){budget_percentage = std::stod(argv[i + 1]);i++;}
     }
 
     // input selection
@@ -49,7 +51,7 @@ int main(int argc, const char * argv[])
         completeProjectData(project);
         
         // currently on 10% of max budget and mean of duration
-        completeTrainingData(project);
+        completeTrainingData(project, budget_percentage);
         std::vector<int> trd(project.num_skills,project.td);
         project.training_duration = trd;
         project.training_costs = {1,1,1,1};
@@ -68,7 +70,7 @@ int main(int argc, const char * argv[])
                result.GAP,
                result.CPU);
         
-        solution_output_model(result, HPC);
+        solution_output_model(result, HPC,budget_percentage);
 
     }
     

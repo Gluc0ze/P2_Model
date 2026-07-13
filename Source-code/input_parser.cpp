@@ -23,7 +23,8 @@ std::vector<std::pair<int, int>> input_selection(bool HPC)
 {
     std::ifstream infile;
     if(HPC == true){
-        infile.open("/user/gent/479/vsc47914/P2/Model_P2/instance_select/P2_Hardset.txt");
+        //infile.open("/user/gent/479/vsc47914/P2/Model_P2/instance_select/P2_Hardset.txt");
+        infile.open("/user/gent/479/vsc47914/P2/Model_P2/instance_select/P2_MSLIB.txt");
     }
     else
     {
@@ -575,7 +576,8 @@ void completeProjectData(MSProjectData& data)
     data.hire_cost = 200;
 }
 
-void completeTrainingData(MSProjectData &data)
+void completeTrainingData(MSProjectData &data,
+                          double &percentage)
 {
     const int n = data.num_activities;
     const int r = data.num_resources;
@@ -609,12 +611,17 @@ void completeTrainingData(MSProjectData &data)
     data.tc = 1;
 }
 
-void solution_output_model(const Solution &sol, bool HPC)
+void solution_output_model(const Solution &sol, bool HPC,double &percentage)
 {
     std::string path = "";
     if(HPC == true)
     {
-        path = "/user/gent/479/vsc47914/P2/Model_P2/results/instances";
+        //path = "/user/gent/479/vsc47914/P2/Model_P2/results/instances";
+        //path.append("/MSLIB");
+        path = "/user/gent/479/vsc47914/P2/Model_P2/results/MSLIB_instances_";
+        if(percentage == 0.01){path.append("1");}
+        else if(percentage == 0.05){path.append("5");}
+        else if(percentage == 0.10){path.append("10");}
         path.append("/MSLIB");
     }
     else
