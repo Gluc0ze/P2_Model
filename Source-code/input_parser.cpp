@@ -624,6 +624,8 @@ void solution_output_model(const Solution &sol, bool HPC,double &percentage)
         else if(percentage == 0.01){path.append("1");}
         else if(percentage == 0.05){path.append("5");}
         else if(percentage == 0.10){path.append("10");}
+        else if(percentage == 0.20){path.append("20");}
+        else if(percentage == 1.00){path.append("100");}
         path.append("/MSLIB");
     }
     else
